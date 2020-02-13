@@ -1,10 +1,7 @@
 # Title
-Description of the project: self-explanatory, clearly state the scope. Re-phrase and summarize JIRA's threads when necessary.
+This project was built to work along with AWS Add-On for Splunk to ingest historical data into splunk via the SQS queue. Because SQS is event based, there is no way to get messages onto the SQS queue about s3 objects that pre-date the queue. This python package will create messages in the SQS queue that will allow the AWS Add-On for Splunk to ingest these s3 objects. 
 
-Provide technical insights by referencing specific environments, frameworks, tools, libraries used (incl. versions).
-
-Provide link to the JIRA ticket related to this project.
-
+This package utilizes the boto3 python library for AWS api calls.
 
 ## Features (optional)
 What makes your project stand out? Highlight relevant features.
