@@ -6,7 +6,7 @@ from datetime import date, datetime
 import time
 
 class QueueS3Data(object):
-    def __init__(self, queue_name, queue_url, bucket_name):
+    def __init__(self, queue_name, queue_url, bucket_name, region):
         self.sqs = boto3.resource('sqs')
         self.s3 = boto3.resource('s3')
         self.client = boto3.client('s3')
@@ -24,7 +24,7 @@ class QueueS3Data(object):
             print('Error, check your bucket name and aws credentials')
 
         self.queue_url = queue_url
-        self.region = self.client.get_bucket_location(Bucket=bucket_name)['LocationConstraint']
+        self.region = region
 
         try:
             self.cpu_count = psutil.cpu_count()
@@ -40,7 +40,9 @@ class QueueS3Data(object):
                 MessageBody = body
             )
         except:
-            print("Error when sending message to SQS", type(body), queue_url)
+            print("Error when sending message to SQS queue:", self.queue_url)
+        
+        return response
 
 
     def process_s3(self):
@@ -50,8 +52,6 @@ class QueueS3Data(object):
         response_iterator = paginator.paginate(Bucket=self.bucket_name)
         arn = 'arn:aws:s3:::{}'.format(self.queue_name)
         region = self.region
-        queue_name = self.queue_name
-        bucket_name = self.bucket_name
 
         print("Processing events..")
         for pageobj in response_iterator:
@@ -72,9 +72,9 @@ class QueueS3Data(object):
         print("Sending messages to SQS..")
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.cpu_count*2) as executor:
             for page in self.s3_data:
-                future_to_message = {executor.submit(self.__enqueue, message) for message in page}
+                future_response = {executor.submit(self.__enqueue, message) for message in page}
 
-        print("{} events added to SQS".format(num_events))
+        return num_events
 
 
     def __serialize_datetime(self, obj):
