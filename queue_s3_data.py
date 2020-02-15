@@ -15,14 +15,13 @@ class QueueS3Data(object):
         try:
             self.queue = self.sqs.get_queue_by_name(QueueName=queue_name)
         except:
-            print('Error, check your queue name and aws credentials')
+            raise ValueError('Error, check your queue name and aws credentials')
         self.bucket_name = bucket_name
 
         try:
             self.bucket = self.s3.Bucket(bucket_name)
         except:
-            print('Error, check your bucket name and aws credentials')
-
+            raise ValueError('Error, check your bucket name and aws credentials')
         self.queue_url = queue_url
         self.region = region
 
