@@ -63,17 +63,22 @@ class QueueS3Data(object):
         print("Processing events..")
         for pageobj in response_iterator:
             page = list()
-            for obj in pageobj['Contents']:
 
-                size = obj['Size']
-                key = obj['Key']
-                last_modified = obj['LastModified']
-                etag = obj['ETag']
+            try:
+                for obj in pageobj['Contents']:
 
-                json_message = self.__construct_message(key, last_modified, size, arn, region, etag)
-                message = json.dumps(json_message, default=self.__serialize_datetime)
-                page.append(message)
-                num_events += 1
+                    size = obj['Size']
+                    key = obj['Key']
+                    last_modified = obj['LastModified']
+                    etag = obj['ETag']
+
+                    json_message = self.__construct_message(key, last_modified, size, arn, region, etag)
+                    message = json.dumps(json_message, default=self.__serialize_datetime)
+                    page.append(message)
+                    num_events += 1
+            except KeyError:
+                print('The specified startafter or prefix values did not return results')
+                return 0
             self.s3_data.append(page)
 
         print("Sending messages to SQS..")
