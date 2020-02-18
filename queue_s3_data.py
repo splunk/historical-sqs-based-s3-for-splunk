@@ -5,26 +5,27 @@ import json
 from datetime import date, datetime
 import time
 
+
 class QueueS3Data(object):
-    def __init__(self, queue_name, queue_url, bucket_name, region):
-        self.sqs = boto3.resource('sqs')
-        self.s3 = boto3.resource('s3')
-        self.client = boto3.client('s3')
-        self.queue_name = queue_name
+
+    def __init__(self, **kwargs):
 
         try:
-            self.queue = self.sqs.get_queue_by_name(QueueName=queue_name)
-        except:
-            raise ValueError('Error, check your queue name and aws credentials')
-        self.bucket_name = bucket_name
+            self.sqs = boto3.resource('sqs')
+            self.s3 = boto3.resource('s3')
+            self.client = boto3.client('s3')
+            self.queue_name = kwargs['queuename']
+            self.queue = self.sqs.get_queue_by_name(QueueName=self.queue_name)
+            self.bucket_name = kwargs['bucketname']
+            self.queue_url = kwargs['queueurl']
+            self.region = kwargs['region']
+            self.verbose = kwargs['verbose']
+        except KeyError as e:
+            print(e)
+            print('expecting keys (queuename, bucketname, queueurl, region, verbose, prefix, startsafter)')
 
-        try:
-            self.bucket = self.s3.Bucket(bucket_name)
-        except:
-            raise ValueError('Error, check your bucket name and aws credentials')
-        self.queue_url = queue_url
-        self.region = region
-
+        self.prefix = kwargs['prefix']
+        self.starts_after = kwargs['startafter']
         try:
             self.cpu_count = psutil.cpu_count()
         except:
@@ -45,10 +46,17 @@ class QueueS3Data(object):
 
 
     def process_s3(self):
-
         num_events = 0
         paginator = self.client.get_paginator('list_objects_v2')
-        response_iterator = paginator.paginate(Bucket=self.bucket_name)
+        kw = {'Bucket': self.bucket_name}
+
+        if self.prefix != '':
+            kw['Prefix'] = self.prefix
+        if self.starts_after != '':
+            kw['StartsAfter'] = self.starts_after
+
+        response_iterator = paginator.paginate(**kw)
+
         arn = 'arn:aws:s3:::{}'.format(self.queue_name)
         region = self.region
 
@@ -69,9 +77,11 @@ class QueueS3Data(object):
             self.s3_data.append(page)
 
         print("Sending messages to SQS..")
-        with concurrent.futures.ThreadPoolExecutor(max_workers=self.cpu_count*2) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.cpu_count*4) as executor:
             for page in self.s3_data:
-                future_response = {executor.submit(self.__enqueue, message) for message in page}
+                for message in page:
+                #future_response = {executor.submit(self.__enqueue, message) for message in page}
+                    executor.submit(self.__enqueue, message)
 
         return num_events
 

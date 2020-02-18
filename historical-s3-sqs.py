@@ -10,8 +10,8 @@ import pprint
 class GUIArgs(object):
 
     def __init__(self):
-        self.queue_name = ''
         self.bucket = ''
+        self.queuename = ''
         self.queueurl = ''
         self.region = ''
         self.start_after = False
@@ -24,24 +24,34 @@ class GUIArgs(object):
 
         response = self.s3.list_buckets()
         self.buckets = [bucket for bucket in response['Buckets']]
+        bucket_choices = [bucket['Name'] for bucket in self.buckets]
         response = self.sqs.list_queues()
 
         self.queue_urls = [queue for queue in response['QueueUrls']]
 
-        self.questions = {
-            'queueurl': inquirer.List(name='queueurl', message='the url of the SQS queue you would like to send messages to (required)', choices=self.queue_urls),
-            'bucket': inquirer.List(name='bucket', message='the bucket to process events from (required)', choices=[bucket['Name'] for bucket in self.buckets]),
-            
-        }
+        self.questions = [
+            inquirer.List(name='queueurl', message='Enter the url of the SQS queue you would like to send messages to', choices=self.queue_urls),
+            inquirer.List(name='bucketname', message='Enter the bucket to process events from', choices=bucket_choices),
+            inquirer.Text(name='startafter', message='Ingest all records after the specified key in S3. This can be any key in your bucket. (press enter to skip)'),
+            inquirer.Text(name='prefix', message='Ingest all records that match the specified prefix (press enter for all records)'),
+            inquirer.Confirm(name='verbose', message='Display all names of the files being written'),
+            inquirer.Confirm(name='time', message='Display how long the execution takes to run')
+        ]
 
-        for key, question in self.questions.items():
-            res = inquirer.prompt([question])
-            if key == 'bucket':
-                self.bucket = res[key]
-                self.region = self.s3.get_bucket_location(Bucket=self.bucket)['LocationConstraint']
-            self.key = res[key]
+        res = inquirer.prompt(self.questions)
+        res['queuename'] = res['queueurl'].split('/')[-1]
+        res['region'] = self.s3.get_bucket_location(Bucket=res['bucketname'])['LocationConstraint']
+        self.attrs = res
+        self.time = res['time']
 
+    def ingest(self):
+        start = time.time()
+        inst = queue_s3_data.QueueS3Data(**self.attrs)
+        num_events = inst.process_s3()
+        end = time.time()
+        print("{} events ingested in {} seconds".format(num_events,end-start))
 
+        
 
 class HandleArgs(object):
 
@@ -109,20 +119,9 @@ class HandleArgs(object):
         return time.time()
 
 
-def main(*args, **kwargs):
-    # try:
-    #     inst = HandleArgs()
-    # except SyntaxError as e:
-    #     print(e)
-    #     return
-
-    # try:
-    #     inst.ingest()
-
-    # except ValueError:
-    #     print('Error! check your queue url and bucket name')
-
+def main():
     inst = GUIArgs()
+    inst.ingest()
 
 if __name__ == '__main__':
     main()
