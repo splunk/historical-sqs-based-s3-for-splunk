@@ -52,7 +52,6 @@ class GUIArgs(object):
         print("{} events ingested in {} seconds".format(num_events,end-start))
 
         
-
 class HandleArgs(object):
 
     def __init__(self):
