@@ -53,7 +53,7 @@ class QueueS3Data(object):
         if self.prefix != '':
             kw['Prefix'] = self.prefix
         if self.starts_after != '':
-            kw['StartsAfter'] = self.starts_after
+            kw['StartAfter'] = self.starts_after
 
         response_iterator = paginator.paginate(**kw)
 
@@ -80,7 +80,6 @@ class QueueS3Data(object):
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.cpu_count*4) as executor:
             for page in self.s3_data:
                 for message in page:
-                #future_response = {executor.submit(self.__enqueue, message) for message in page}
                     executor.submit(self.__enqueue, message)
 
         return num_events
