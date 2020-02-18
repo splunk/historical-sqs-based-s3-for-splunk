@@ -66,6 +66,8 @@ class HandleArgs(object):
         self.verbose = False
         self.time = False
 
+        self.attrs = {}
+
         self.parser = argparse.ArgumentParser(description='Process aws options')
 
         self.parser.add_argument('queueurl', help='the url of the SQS queue you would like to send messages to (required)')
@@ -79,28 +81,28 @@ class HandleArgs(object):
         args = self.parser.parse_args()
 
         try:
-            self.queue_url = args.queueurl.split("=")[1]
-            self.bucket_name = args.bucket.split("=")[1]
-            self.region = args.region.split("=")[1]
-            self.queue_name = self.queue_url.split('/')[-1]
+            self.attrs['queueurl'] = args.queueurl.split("=")[1]
+            self.attrs['bucketname'] = args.bucket.split("=")[1]
+            self.attrs['region'] = args.region.split("=")[1]
+            self.attrs['queuename'] = self.attrs['queueurl'].split('/')[-1]
 
             if args.startafter:
-                self.start_after = args.startafter
+                self.attrs['startafter'] = args.startafter
 
             if args.prefix:
-                self.prefix = args.prefix
+                self.attrs['prefix'] = args.prefix
             
             if args.verbose:
-                self.verbose = True
+                self.attrs['verbose'] = True
 
             if args.time:
                 self.time = True
-            #print("RE",self.queue_name)
+
         except:
             raise SyntaxError('Invalid syntax. your positional arguments should be in the form queue=myqueuename bucket=mybucketname')
 
     def ingest(self):
-        inst = queue_s3_data.QueueS3Data(self.queue_name, self.queue_url, self.bucket_name, self.region)
+        inst = queue_s3_data.QueueS3Data(**self.attrs)
 
         if self.time:
             start = self.__timeit()
@@ -122,6 +124,9 @@ class HandleArgs(object):
 def main():
     inst = GUIArgs()
     inst.ingest()
+
+    # inst = HandleArgs()
+    # inst.ingest()
 
 if __name__ == '__main__':
     main()

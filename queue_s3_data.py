@@ -19,13 +19,25 @@ class QueueS3Data(object):
             self.bucket_name = kwargs['bucketname']
             self.queue_url = kwargs['queueurl']
             self.region = kwargs['region']
-            self.verbose = kwargs['verbose']
-        except KeyError as e:
-            print(e)
-            print('expecting keys (queuename, bucketname, queueurl, region, verbose, prefix, startsafter)')
+        except KeyError:
+            print('key not found, expecting keys (queuename, bucketname, queueurl, region, verbose, prefix, startsafter)')
+            return
 
-        self.prefix = kwargs['prefix']
-        self.starts_after = kwargs['startafter']
+        if 'verbose' in kwargs.keys():
+            self.verbose = kwargs['verbose']
+        else:
+            self.verbose = False
+
+        if 'prefix' in kwargs.keys():
+            self.prefix = kwargs['prefix']
+        else:
+            self.prefix = ''
+
+        if 'startafter' in kwargs.keys():
+            self.start_after = kwargs['startafter']
+        else:
+            self.start_after = ''
+
         try:
             self.cpu_count = psutil.cpu_count()
         except:
@@ -52,7 +64,7 @@ class QueueS3Data(object):
 
         if self.prefix != '':
             kw['Prefix'] = self.prefix
-        if self.starts_after != '':
+        if self.start_after != '':
             kw['StartAfter'] = self.starts_after
 
         response_iterator = paginator.paginate(**kw)
