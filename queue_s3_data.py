@@ -1,10 +1,19 @@
-import boto3
 import concurrent.futures
 import multiprocessing
 import json
 from datetime import date, datetime
 import time
+import sys
+from tqdm import tqdm
+import psutil
 
+import boto3
+
+__author__ = 'Skyler Taylor'
+__version__ = '1.0.0'
+__email__  = 'skylert@splunk.com'
+__maintainer__ = ''
+__status__ = 'Prototype'
 
 class QueueS3Data(object):
 
@@ -23,17 +32,18 @@ class QueueS3Data(object):
             print('key not found, expecting keys (queuename, bucketname, queueurl, region, verbose, prefix, startsafter)')
             return
 
-        if 'verbose' in kwargs.keys():
+        keys = kwargs.keys()
+        if 'verbose' in keys:
             self.verbose = kwargs['verbose']
         else:
             self.verbose = False
 
-        if 'prefix' in kwargs.keys():
+        if 'prefix' in keys:
             self.prefix = kwargs['prefix']
         else:
             self.prefix = ''
 
-        if 'startafter' in kwargs.keys():
+        if 'startafter' in keys:
             self.start_after = kwargs['startafter']
         else:
             self.start_after = ''
@@ -65,7 +75,7 @@ class QueueS3Data(object):
         if self.prefix != '':
             kw['Prefix'] = self.prefix
         if self.start_after != '':
-            kw['StartAfter'] = self.starts_after
+            kw['StartAfter'] = self.start_after
 
         response_iterator = paginator.paginate(**kw)
 
@@ -73,32 +83,42 @@ class QueueS3Data(object):
         region = self.region
 
         print("Processing events..")
+        num_pages = 0
         for pageobj in response_iterator:
             page = list()
+            num_pages += 1
 
             try:
                 for obj in pageobj['Contents']:
-
                     size = obj['Size']
                     key = obj['Key']
                     last_modified = obj['LastModified']
                     etag = obj['ETag']
 
+                    if self.verbose:
+                        print(key)
+
                     json_message = self.__construct_message(key, last_modified, size, arn, region, etag)
                     message = json.dumps(json_message, default=self.__serialize_datetime)
                     page.append(message)
                     num_events += 1
+
             except KeyError:
                 print('The specified startafter or prefix values did not return results')
                 return 0
             self.s3_data.append(page)
 
         print("Sending messages to SQS..")
-        with concurrent.futures.ThreadPoolExecutor(max_workers=self.cpu_count*4) as executor:
-            for page in self.s3_data:
-                for message in page:
-                    executor.submit(self.__enqueue, message)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.cpu_count*6) as executor:
+            for page_num, page in enumerate(self.s3_data):
+                jobs = {page_num: executor.submit(self.__enqueue, message) for message in page}
 
+                for page_num, job in jobs.items():
+                    job = job.result()
+                    percent_done = int(((page_num+1)/num_pages)*100)
+                    sys.stdout.write("\r%d%%" % percent_done)
+
+        print('\n')
         return num_events
 
 
