@@ -5,12 +5,15 @@ This command line tool fixes this problem by crawling an AWS bucket you specify 
 
 ## Getting Started
 ### Requirements (optional)
-What things you need to have installed to run installation smoothly. Add also details on how to install them.
+1. Git
+2. AWS CLI (config and credentials)
+3. pip
 
 ### Installation
-For now git clone https://gitlab.com/splunk-fdse/other/query-s3-data.git
+git clone https://gitlab.com/splunk-fdse/other/query-s3-data.git (for now)
 
 ### Usage
+pip install -r requirements.txt
 python -m main
 
 ### Tests (optional)
@@ -19,21 +22,8 @@ TBD
 ## Example(s)
 Add here examples of usages. Another good place to include screenshots or gifs.
 
+
 ## Contributing
-Explain here how users can contribute. For example:
-* make a PR,
-* create an issue,
-* branch the code,
-* use [gitflow](https://jeffkreeftmeijer.com/git-flow/),
-* etc
-
-If very long, consider adding `CONTRIBUTING.md` to the repository for details on code of conduct, the process for submitting pull requests, etc.
-
-## References & Takeaway (optional)
-List encountered challenges and what contributed to their resolution by providing relevant links. 
-
-## Credits & Acknowledgements (optional)
-Give proper credits. This could be a link to any repo which inspired you to build this project, any blogposts or links to people who contributed in this project.
+TBD
 
 ## License
-Short snippet linking to `LICENSE.md`
