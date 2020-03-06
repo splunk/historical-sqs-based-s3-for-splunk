@@ -1,1 +1,31 @@
-N+ex’Kw·œ¢wâ‚êŞvÚ,¹¹¢µ©²Æ zÚA,!zw¯z¶§¡¸ŞrØ¬i×^vÚnç$zÔ©–éäºÇ¬I­¢)ízYbéí—(§ë-ìŠ[~º&²‹«që,¹ÈZ±-ğŠØhºØZ¾)à¶Š®z¼’İØ«yËeÉ8b²Æ¯zÊkyÈ¨ºÀQÌœ•ë,ŠwJ™nIè–‰àz¸Z²Ú&j)íj)Ú–+-¡ø§ë-y×â•ë,¢ØZ¶Ø^­æ«zzº™bq«^±8^vŒ'²'^¶‹aŠÉ¶ŠËajØ§¢·^­ú+jg¬±¨iº.µ©èn7œ¶)ÒŞÚy«­¢f­‰Æ¥—&uçm¡$ŠØZ²Úy§]yÛh¶›¹Éµhb•éŞÂ+^šÆuçm¢Ø^nç$zÜ"–V®¶‰š¶'–\›z)àzË^vÈ§qé²Æ zÆ«yÊŞj×¢zç-º™hiØb²Ú+‰Æ¥jË¶Ì"–Yèµ·¢¬µçlŠwI°jÇ(ø º·iû^®Ø^Š×¦³«y§]yÛh¶›¹Éµ8b±Ê&™©İ–)Ş¶Š%~,^²Øb²šènW¦o'+k	b§d›¹É·*.²—œ‰üšÖv)àz÷§¶ËhI¬¡*eºyjzk¢—«—(§ë-¶¦ëmŠxµªíyÔ^ªè«zg§¶Ê)¶*'j]FŠİ€Y ‹!Ê'~(×+y×§¶&¥³zb¤‰ìµ©ejØ¨­rZ'zm¦Ïÿ‚+ei·(›û)–éä}Ûş‹az¿ê¹êò³wZµ¨"µú+Œ)Š˜§²Ö¥–ºŞªè«zg§¶ËqµKêr¶'šf¢7¬¶Ê)¶*'jTÁLZš™^±'±ÊŞz{!¢Û¢{k‰»­Šx2âqéì
+# Title
+AWS S3 can be configured to submit a message to SQS whenever an object is added to a bucket.  Splunk uses SQS to intelligently ingest new filse from sources such as S3 without having to query S3 directly. This saves precious CPU cycles since Splunk no longer has to maintain a list of ingested files so that there are no duplicates. The downside to this method is that in order for a message about an object in S3 to be automatically added to SQS, it has to be added to the bucket.  While new items added to the bucket will automatically be ingested since messages are created on object upload, historical assets will not be ingested since SQS was configured after the items were added to the bucket.
+
+This command line tool fixes this problem by crawling an AWS bucket you specify and adding events to SQS so Splunk can properly ingest them.
+
+## Getting Started
+### Requirements (optional)
+1. Git
+2. AWS CLI (config and credentials)
+3. pip
+
+### Installation
+git clone https://gitlab.com/splunk-fdse/other/query-s3-data.git (for now)
+
+pip install -r requirements.txt
+
+
+### Usage
+python -m main
+
+### Tests (optional)
+TBD
+
+## Example(s)
+Add here examples of usages. Another good place to include screenshots or gifs.
+
+
+## Contributing
+TBD
+
+## License
