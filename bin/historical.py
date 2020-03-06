@@ -6,7 +6,7 @@ import inquirer
 import pprint
 import boto3
 
-import queue-s3-data
+from bin.queue import QueueS3Data
 
 __author__ = 'Skyler Taylor'
 __version__ = '1.0.0'
@@ -55,7 +55,7 @@ class GUIArgs(object):
 
     def ingest(self):
         start = self.__timeit()
-        inst = queue-s3-data.QueueS3Data(**self.attrs)
+        inst = QueueS3Data(**self.attrs)
         num_events = inst.process_s3()
         end = self.__timeit()
         print("{} events ingested in {} seconds".format(num_events,end-start))
@@ -108,7 +108,7 @@ class HandleArgs(object):
             raise SyntaxError('Invalid syntax. your positional arguments should be in the form queueurl=<myqueueurl> bucket=<mybucketname>')
 
     def ingest(self):
-        inst = queue-s3-data.QueueS3Data(**self.attrs)
+        inst = QueueS3Data(**self.attrs)
 
         if self.time:
             start = self.__timeit()
@@ -125,29 +125,3 @@ class HandleArgs(object):
 
     def __timeit(self):
         return time.time()
-
-
-def main():
-    '''
-    CLI GUI
-    '''
-    try:
-        inst = GUIArgs()
-    except ValueError as e:
-        print(e)
-        return
-    inst.ingest()
-
-
-    '''
-    Normal CLI
-    '''
-    # try:
-    #     inst = HandleArgs()
-    # except SyntaxError as e:
-    #     print(e)
-    #     return
-    # inst.ingest()
-
-if __name__ == '__main__':
-    main()

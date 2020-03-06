@@ -4,7 +4,6 @@ import json
 from datetime import date, datetime
 import time
 import sys
-from tqdm import tqdm
 import psutil
 
 import boto3
