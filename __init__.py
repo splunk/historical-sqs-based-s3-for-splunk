@@ -1,1 +1,1 @@
-import queue_s3_data
+import queue-s3-data
