@@ -11,9 +11,9 @@ This command line tool fixes this problem by crawling an AWS bucket you specify 
 
 ### Installation
 git clone https://gitlab.com/splunk-fdse/other/query-s3-data.git (for now)
+pip install -r requirements.txt
 
 ### Usage
-pip install -r requirements.txt
 python -m main
 
 ### Tests (optional)
