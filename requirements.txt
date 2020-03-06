@@ -1,6 +1,4 @@
 argparse
 inquirer
 boto3
-pprint
-multiprocessing
-datetime
+psutil

@@ -1,5 +1,4 @@
 import concurrent.futures
-import multiprocessing
 import json
 from datetime import date, datetime
 import time
@@ -11,7 +10,7 @@ import boto3
 __author__ = 'Skyler Taylor'
 __version__ = '1.0.0'
 __email__  = 'skylert@splunk.com'
-__maintainer__ = ''
+__maintainer__ = 'tbd'
 __status__ = 'Prototype'
 
 class QueueS3Data(object):
