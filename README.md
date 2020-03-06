@@ -20,8 +20,7 @@ python -m main
 TBD
 
 ## Example(s)
-Add here examples of usages. Another good place to include screenshots or gifs.
-
+See screenshots
 
 ## Contributing
 TBD
