@@ -1,26 +1,20 @@
 # Title
-This project was built to work along with AWS Add-On for Splunk to ingest historical data into splunk via the SQS queue. Because SQS is event based, there is no way to get messages onto the SQS queue about s3 objects that pre-date the queue. This python package will create messages in the SQS queue that will allow the AWS Add-On for Splunk to ingest these s3 objects. 
+AWS S3 can be configured to submit a message to SQS whenever an object is added to a bucket.  Splunk uses SQS to intelligently ingest new filse from sources such as S3 without having to query S3 directly. This saves precious CPU cycles since Splunk no longer has to maintain a list of ingested files so that there are no duplicates. The downside to this method is that in order for a message about an object in S3 to be automatically added to SQS, it has to be added to the bucket.  While new items added to the bucket will automatically be ingested since messages are created on object upload, historical assets will not be ingested since SQS was configured after the items were added to the bucket.
 
-This package utilizes the boto3 python library for AWS api calls.
-
-## Features (optional)
-What makes your project stand out? Highlight relevant features.
-
-## Table of Contents (optional)
-Only in case of very long READMEs
+This command line tool fixes this problem by crawling an AWS bucket you specify and adding events to SQS so Splunk can properly ingest them.
 
 ## Getting Started
 ### Requirements (optional)
 What things you need to have installed to run installation smoothly. Add also details on how to install them.
 
 ### Installation
-Tell other users how to install your project locally. Optionally, include a gif to make the process even more clear for other people.
+For now git clone https://gitlab.com/splunk-fdse/other/query-s3-data.git
 
 ### Usage
-Instruct other people on how to use your project after they’ve installed it. This would also be a good place to include screen shots of your project in action.
+python -m main
 
 ### Tests (optional)
-Explain how to run the automated tests for this system
+TBD
 
 ## Example(s)
 Add here examples of usages. Another good place to include screenshots or gifs.
