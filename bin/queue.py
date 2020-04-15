@@ -136,30 +136,37 @@ class QueueS3Data(object):
                     "eventTime": last_modified,
                     "eventName": "ObjectCreated:Put",
                     "userIdentity": {
-                        "principalId": "AWS:AROAIF4JELG3VJGB7GNKM:regionalDeliverySession"
-                },
+                        # "principalId": "AWS:AROAIF4JELG3VJGB7GNKM:regionalDeliverySession"
+                        "principalId": ""
+                    },
                     "requestParameters": {
-                        "sourceIPAddress": "54.92.179.66"
+                        #"sourceIPAddress": "54.92.179.66"
+                        "sourceIPAddress": ""
                 },
                     "responseElements": {
-                        "x-amz-request-id": "9F7C49919622C34A",
-                        "x-amz-id-2": "KcSix4Os8A+rHSEGV0B/uvOMly9nJ6eub5+nw/3w13YbmSozv0Tu5RGBqTTGWunxpa/hdlXhnI3qLowAgFMTNxa1nwJSx4Rc"
-                },
+                        # "x-amz-request-id": "9F7C49919622C34A",
+                        # "x-amz-id-2": "KcSix4Os8A+rHSEGV0B/uvOMly9nJ6eub5+nw/3w13YbmSozv0Tu5RGBqTTGWunxpa/hdlXhnI3qLowAgFMTNxa1nwJSx4Rc"
+                        "x-amz-request-id": "",
+                        "x-amz-id-2": ""
+
+                    },
                 "s3": {
                         "s3SchemaVersion": "1.0",
-                        "configurationId": "MySplunkEventForObjectCreate",
+                        #"configurationId": "MySplunkEventForObjectCreate",
+                        "configurationId": self.queue_name,
                         "bucket": {
-                        "name": self.bucket_name,
-                        "ownerIdentity": {
-                            "principalId": "A2I92S72CEK8CQ"
-                    },
-                        "arn": arn
-                    },
+                            "name": self.bucket_name,
+                            "ownerIdentity": {
+                                #"principalId": "A2I92S72CEK8CQ"
+                                "principalId": ""
+                            },
+                            "arn": arn
+                        },
                         "object": {
                             "key": key,
                             "size": size,
                             "eTag": etag,
-                            "sequencer": "005E430DF8DA899339"
+                            #"sequencer": "005E430DF8DA899339"
                         }
                     }
                 }
