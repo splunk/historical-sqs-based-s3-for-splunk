@@ -4,25 +4,24 @@ AWS S3 can be configured to submit a message to SQS whenever an object is added 
 This command line tool fixes this problem by crawling an AWS bucket you specify and adding events to SQS so Splunk can properly ingest them.
 
 ## Getting Started
-### Requirements (optional)
+### Requirements
 1. Git
 2. AWS CLI (config and credentials)
 3. pip
 
 ### Installation
-git clone https://gitlab.com/splunk-fdse/other/query-s3-data.git (for now)
-
-pip install -r requirements.txt
+1. git clone https://gitlab.com/splunk-fdse/other/query-s3-data.git (for now)
+2. pip install -r requirements.txt
 
 
 ### Usage
 python -m main
 
-### Tests (optional)
+### Tests
 TBD
 
 ## Example(s)
-Add here examples of usages. Another good place to include screenshots or gifs.
+![Getting Started](./screenshots/usage_screenshot.png)
 
 
 ## Contributing
