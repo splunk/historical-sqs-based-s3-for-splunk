@@ -3,7 +3,6 @@ import json
 from datetime import date, datetime
 import time
 import sys
-import psutil
 
 import boto3
 
@@ -46,11 +45,6 @@ class QueueS3Data(object):
         else:
             self.start_after = ''
 
-        try:
-            self.cpu_count = psutil.cpu_count()
-        except:
-            self.cpu_count = 2
-
         self.s3_data = list()
 
     def __enqueue(self, body):
@@ -83,7 +77,7 @@ class QueueS3Data(object):
         print("Processing events..")
         num_pages = 0
         for pageobj in response_iterator:
-            page = list()
+            page = []
             num_pages += 1
 
             try:
@@ -98,16 +92,16 @@ class QueueS3Data(object):
 
                     json_message = self.__construct_message(key, last_modified, size, arn, region, etag)
                     message = json.dumps(json_message, default=self.__serialize_datetime)
-                    page.append(message)
+                    page.append(message1)
                     num_events += 1
 
-            except KeyError:
-                print('The specified startafter or prefix values did not return results')
+            except KeyError as e:
+                print('The specified startafter or prefix values did not return results -- {}'.format(e))
                 return 0
             self.s3_data.append(page)
 
         print("Sending messages to SQS..")
-        with concurrent.futures.ThreadPoolExecutor(max_workers=self.cpu_count*6) as executor:
+        with concurrent.futures.ThreadPoolExecutor() as executor:
             for page_num, page in enumerate(self.s3_data):
                 jobs = {page_num: executor.submit(self.__enqueue, message) for message in page}
 

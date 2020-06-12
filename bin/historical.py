@@ -58,7 +58,7 @@ class GUIArgs(object):
         inst = QueueS3Data(**self.attrs)
         num_events = inst.process_s3()
         end = self.__timeit()
-        print("{} events ingested in {} seconds".format(num_events,end-start))
+        print("{} files added to sqs queue in {} seconds".format(num_events,end-start))
 
     def __timeit(self):
         return time.time()
