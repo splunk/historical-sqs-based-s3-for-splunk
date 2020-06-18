@@ -37,8 +37,8 @@ class CliGUI(object):
         try:
             self.buckets = [bucket for bucket in response['Buckets']]
             bucket_choices = [bucket['Name'] for bucket in self.buckets]
-        except Exception as e:
-            raise e
+        except KeyError:
+            raise KeyError('no buckets found')
 
         try:
             response = self.sqs.list_queues()

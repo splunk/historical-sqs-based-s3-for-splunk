@@ -44,7 +44,7 @@ class QueueS3Data(object):
         else:
             self.start_after = ''
 
-        self.s3_data = list()
+        self.s3_data = []
 
     def __enqueue(self, body):
         try:
@@ -54,7 +54,7 @@ class QueueS3Data(object):
             )
             return response
         except:
-            print("Error when sending message to SQS queue:", self.queue_url)
+            print('Error when sending message to SQS queue:', self.queue_url)
 
     def process_s3(self):
         num_events = 0
@@ -71,7 +71,7 @@ class QueueS3Data(object):
         arn = 'arn:aws:s3:::{}'.format(self.queue_name)
         region = self.region
 
-        print("processing files..")
+        print('processing files..')
         num_pages = 0
         for pageobj in response_iterator:
             page = []
@@ -97,7 +97,7 @@ class QueueS3Data(object):
 
             self.s3_data.append(page)
 
-        print("sending messages to SQS..")
+        print('sending messages to SQS..')
         with concurrent.futures.ThreadPoolExecutor() as executor:
             for page_num, page in enumerate(self.s3_data):
                 jobs = {page_num: executor.submit(self.__enqueue, message) for message in page}
@@ -105,7 +105,7 @@ class QueueS3Data(object):
                 for page_num, job in jobs.items():
                     job = job.result()
                     percent_done = int(((page_num+1)/num_pages)*100)
-                    sys.stdout.write("\r%d%%" % percent_done)
+                    sys.stdout.write('\r%d%%' % percent_done)
 
         print('\n')
         return num_events
@@ -115,7 +115,7 @@ class QueueS3Data(object):
         if isinstance(obj, (datetime, date)):
             return obj.isoformat()
         else:
-            raise TypeError ("Type %s not serializable" % type(obj))
+            raise TypeError ('Type %s not serializable' % type(obj))
 
     def __construct_message(self, key, last_modified, size, arn, region, etag):
         message = {
