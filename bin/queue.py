@@ -15,7 +15,6 @@ __status__ = 'Prototype'
 class QueueS3Data(object):
 
     def __init__(self, **kwargs):
-
         try:
             self.sqs = boto3.resource('sqs')
             self.s3 = boto3.resource('s3')
@@ -53,11 +52,9 @@ class QueueS3Data(object):
                 QueueUrl = self.queue_url,
                 MessageBody = body
             )
+            return response
         except:
             print("Error when sending message to SQS queue:", self.queue_url)
-        
-        return response
-
 
     def process_s3(self):
         num_events = 0
@@ -74,7 +71,7 @@ class QueueS3Data(object):
         arn = 'arn:aws:s3:::{}'.format(self.queue_name)
         region = self.region
 
-        print("Processing events..")
+        print("processing files..")
         num_pages = 0
         for pageobj in response_iterator:
             page = []
@@ -92,15 +89,15 @@ class QueueS3Data(object):
 
                     json_message = self.__construct_message(key, last_modified, size, arn, region, etag)
                     message = json.dumps(json_message, default=self.__serialize_datetime)
-                    page.append(message1)
+                    page.append(message)
                     num_events += 1
-
             except KeyError as e:
                 print('The specified startafter or prefix values did not return results -- {}'.format(e))
                 return 0
+
             self.s3_data.append(page)
 
-        print("Sending messages to SQS..")
+        print("sending messages to SQS..")
         with concurrent.futures.ThreadPoolExecutor() as executor:
             for page_num, page in enumerate(self.s3_data):
                 jobs = {page_num: executor.submit(self.__enqueue, message) for message in page}

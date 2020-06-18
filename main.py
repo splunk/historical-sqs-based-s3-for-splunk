@@ -1,26 +1,25 @@
-from bin.historical import GUIArgs
-from bin.historical import HandleArgs
+from bin.cli import CliGUI, Cli
 
 def main():
     '''
     CLI GUI
     '''
     try:
-        inst = GUIArgs()
-    except ValueError as e:
+        inst = CliGUI()
+    except Exception as e:
         print(e)
         return
-    inst.ingest()
+    inst.queue()
 
     '''
     Normal CLI
     '''
     # try:
-    #     inst = HandleArgs()
+    #     inst = Cli()
     # except SyntaxError as e:
     #     print(e)
     #     return
-    # inst.ingest()
+    # inst.queue()
 
 if __name__ == '__main__':
     main()

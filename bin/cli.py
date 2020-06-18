@@ -14,7 +14,7 @@ __email__  = 'skylert@splunk.com'
 __maintainer__ = ''
 __status__ = 'Prototype'
 
-class GUIArgs(object):
+class CliGUI(object):
 
     def __init__(self):
         self.bucket = ''
@@ -32,13 +32,19 @@ class GUIArgs(object):
         try:
             response = self.s3.list_buckets()
         except:
-            raise ValueError("credentials missing or invalid")
-            
-        self.buckets = [bucket for bucket in response['Buckets']]
-        bucket_choices = [bucket['Name'] for bucket in self.buckets]
-        response = self.sqs.list_queues()
+            raise ValueError('credentials missing or invalid')
+        
+        try:
+            self.buckets = [bucket for bucket in response['Buckets']]
+            bucket_choices = [bucket['Name'] for bucket in self.buckets]
+        except Exception as e:
+            raise e
 
-        self.queue_urls = [queue for queue in response['QueueUrls']]
+        try:
+            response = self.sqs.list_queues()
+            self.queue_urls = [queue for queue in response['QueueUrls']]
+        except KeyError:
+            raise KeyError('no queues found')
 
         self.questions = [
             inquirer.List(name='queueurl', message='Enter the url of the SQS queue you would like to send messages to', choices=self.queue_urls),
@@ -53,17 +59,17 @@ class GUIArgs(object):
         res['region'] = self.s3.get_bucket_location(Bucket=res['bucketname'])['LocationConstraint']
         self.attrs = res
 
-    def ingest(self):
+    def queue(self):
         start = self.__timeit()
         inst = QueueS3Data(**self.attrs)
         num_events = inst.process_s3()
         end = self.__timeit()
-        print("{} files added to sqs queue in {} seconds".format(num_events,end-start))
+        print('{} files added to {} in {} seconds'.format(num_events, self.queueurl, end-start))
 
     def __timeit(self):
         return time.time()
         
-class HandleArgs(object):
+class Cli(object):
 
     def __init__(self):
 
@@ -85,7 +91,7 @@ class HandleArgs(object):
         self.parser.add_argument('region', help='the region both the bucket and the queue are in (required)')
         self.parser.add_argument('--startafter', help='ingest all records after the specified key in S3.  This can be any key in your bucket.')
         self.parser.add_argument('--prefix', help='ingest all records that match the specified prefix')
-        self.parser.add_argument('--verbose', help='Display all names of the files being written (default: false)', action="store_true")
+        self.parser.add_argument('--verbose', help='Display all names of the files being written (default: false)', action='store_true')
 
         args = self.parser.parse_args()
 
@@ -107,7 +113,7 @@ class HandleArgs(object):
         except:
             raise SyntaxError('Invalid syntax. your positional arguments should be in the form queueurl=<myqueueurl> bucket=<mybucketname>')
 
-    def ingest(self):
+    def queue(self):
         inst = QueueS3Data(**self.attrs)
 
         if self.time:
@@ -118,10 +124,10 @@ class HandleArgs(object):
         if self.time:
             end = self.__timeit()
             total_time = end - start
-            print("{} events added to {} in {} seconds".format(num_events, self.queue_url, total_time))
+            print('{} files added to {} in {} seconds'.format(num_events, self.queue_url, total_time))
 
         else:
-            print("Done")
+            print('Done')
 
     def __timeit(self):
         return time.time()
