@@ -6,7 +6,7 @@ import inquirer
 import pprint
 import boto3
 
-from bin.queue import QueueS3Data
+from enqueue import QueueS3Data
 
 __author__ = 'Skyler Taylor'
 __version__ = '1.0.0'

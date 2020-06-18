@@ -1,4 +1,4 @@
-from bin.cli import CliGUI, Cli
+from cli import Cli, CliGUI
 
 def main():
     '''
