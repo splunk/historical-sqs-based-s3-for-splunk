@@ -19,7 +19,7 @@ This command line tool fixes this problem by crawling an AWS bucket you specify 
     - tbd
 
 ### Usage
-python main
+python main.py
 
 ### Tests
 TBD
