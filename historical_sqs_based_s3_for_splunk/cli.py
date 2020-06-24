@@ -9,7 +9,7 @@ import boto3
 from enqueue import QueueS3Data
 
 __author__ = 'Skyler Taylor'
-__version__ = '1.0.0'
+__version__ = '0.0.2'
 __email__  = 'skylert@splunk.com'
 __maintainer__ = ''
 __status__ = 'Prototype'
