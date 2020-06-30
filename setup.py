@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="historical-sqs-based-s3-for-splunk-skylert", # Replace with your own username
+    name="historical-sqs-based-s3-for-splunk-skylert",
     version="0.0.2",
     author="Skyler Taylor",
     author_email="skylert@splunk.com",
