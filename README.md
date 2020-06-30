@@ -5,30 +5,21 @@ This command line tool fixes this problem by crawling an AWS bucket you specify 
 
 ## Getting Started
 ### Requirements
-1. git
-2. AWS CLI (config and credentials)
-3. pip
+- git
+- AWS CLI (run aws configure)
+- python >= 2.7
+- pip
 
 ### Installation
-
-- Clone from Github:
-   - git clone https://github.com/splunk/historical-s3-sqs-python.git
-   - pip install -r requirements.txt
-
-- Install from pip:
-    - tbd
+    git clone https://github.com/splunk/historical-sqs-based-s3-for-splunk.git
+    cd historical-sqs-based-s3-for-splunk
+    pip install -r requirements.txt
 
 ### Usage
-python main.py
+    python -m historical_sqs_based_s3_for_splunk
 
 ### Tests
-TBD
-
-## Example(s)
-![Getting Started](./screenshots/usage_screenshot.png)
-
+    python -m unittest tests.test_connection
 
 ## Contributing
 TBD
-
-## License

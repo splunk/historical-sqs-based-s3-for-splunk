@@ -6,7 +6,7 @@ import inquirer
 import pprint
 import boto3
 
-from enqueue import QueueS3Data
+from historical_sqs_based_s3_for_splunk.enqueue import QueueS3Data
 
 __author__ = 'Skyler Taylor'
 __version__ = '0.0.2'

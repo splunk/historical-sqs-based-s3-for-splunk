@@ -1,15 +1,15 @@
-from cli import Cli, CliGUI
+from historical_sqs_based_s3_for_splunk.cli import Cli, CliGUI
 
 def main():
     '''
     CLI GUI
     '''
     try:
-        inst = CliGUI()
+        CliGUI().queue()
     except Exception as e:
         print(e)
         return
-    inst.queue()
+    # inst.queue()
 
     '''
     Normal CLI
