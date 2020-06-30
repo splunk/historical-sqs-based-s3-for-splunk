@@ -1,27 +1,37 @@
 import unittest
 import boto3
+from botocore.exceptions import (ClientError,
+                                ParamValidationError,
+                                NoCredentialsError,
+                                EndpointConnectionError)
 
 class TestConnection(unittest.TestCase):
 
+    # Test aws S3 connection
     def test_s3_connection(self):
         try:
             client = boto3.client('s3')
-        except Exception as e:
-            print(e)
+            response = client.list_buckets()
+        except (
+                    ClientError,
+                    ParamValidationError,
+                    NoCredentialsError,
+                    EndpointConnectionError
+               )  as e:
+            raise AssertionError(e)
 
-    # def test_upper(self):
-    #     self.assertEqual('foo'.upper(), 'FOO')
-
-    # def test_isupper(self):
-    #     self.assertTrue('FOO'.isupper())
-    #     self.assertFalse('Foo'.isupper())
-
-    # def test_split(self):
-    #     s = 'hello world'
-    #     self.assertEqual(s.split(), ['hello', 'world'])
-    #     # check that s.split fails when the separator is not a string
-    #     with self.assertRaises(TypeError):
-    #         s.split(2)
+    # Test aws SQS connection
+    def test_sqs_connection(self):
+        try:
+            client = boto3.client('sqs')
+            response = client.list_queues()
+        except (
+                    ClientError,
+                    ParamValidationError,
+                    NoCredentialsError,
+                    EndpointConnectionError
+               )  as e:
+            raise AssertionError(e)
 
 if __name__ == '__main__':
     unittest.main()
