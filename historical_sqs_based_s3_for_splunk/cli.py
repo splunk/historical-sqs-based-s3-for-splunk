@@ -65,7 +65,7 @@ class CliGUI(object):
         inst = QueueS3Data(**self.attrs)
         num_events = inst.process_s3()
         end = self.__timeit()
-        print('{} files added to {} in {} seconds'.format(num_events, self.queueurl, end-start))
+        print('{} files added to {} in {} seconds'.format(num_events, self.queuename, end-start))
 
     def __timeit(self):
         return time.time()
