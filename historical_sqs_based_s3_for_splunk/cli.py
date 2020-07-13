@@ -57,6 +57,7 @@ class CliGUI(object):
         res = inquirer.prompt(self.questions)
         res['queuename'] = res['queueurl'].split('/')[-1]
         res['region'] = self.s3.get_bucket_location(Bucket=res['bucketname'])['LocationConstraint']
+        self.queuename = res['queuename']
         self.attrs = res
 
     def queue(self):
